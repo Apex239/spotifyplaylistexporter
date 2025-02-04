@@ -78,19 +78,16 @@ def index():
         if not playlist_url:
             flash("Please enter a Spotify playlist URL.", "danger")
             return redirect(url_for('index'))
-
         # Extract the playlist ID from the URL
         playlist_id = extract_playlist_id(playlist_url)
         if not playlist_id:
             flash("Invalid Spotify playlist URL.", "danger")
             return redirect(url_for('index'))
-
         try:
             # Retrieve the playlist data from Spotify
             playlist = sp.playlist(playlist_id)
             tracks = playlist.get('tracks')
             track_data = []
-
             # Handle paginated track lists
             while tracks:
                 for item in tracks.get('items', []):
@@ -106,8 +103,7 @@ def index():
                     tracks = sp.next(tracks)
                 else:
                     break
-
-            # Generate CSV in-memory and send as download using the production parameter
+            # Generate CSV in-memory and send as download
             csv_file = generate_csv(track_data)
             return send_file(
                 csv_file,
@@ -123,7 +119,6 @@ def index():
             logger.exception("Error processing playlist: %s", e)
             flash("An unexpected error occurred while processing the playlist.", "danger")
             return redirect(url_for('index'))
-
     return render_template('index.html')
 
 if __name__ == '__main__':
