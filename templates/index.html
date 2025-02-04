@@ -1,102 +1,121 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spotify Playlist Exporter</title>
   <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Custom CSS for dark mode, glass effect and animations -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    /* Global dark background with gradient */
+    /* Minimalist design with smooth transitions */
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #212529;
+      --primary-color: #0d6efd;
+      --alert-bg: #fff3cd;
+      --alert-border: #ffeeba;
+    }
     body {
-      background: linear-gradient(135deg, #1e1e1e, #121212);
-      color: #e0e0e0;
-      min-height: 100vh;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      transition: background 0.5s ease;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
     }
-    /* Glassmorphism container */
-    .container {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      backdrop-filter: blur(10px);
-      padding: 2rem;
-      margin-top: 5rem;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-      animation: fadeIn 1s ease-in-out;
+    /* Dark mode variables */
+    .dark-mode {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --primary-color: #4a90e2;
+      --alert-bg: #333333;
+      --alert-border: #444444;
     }
-    /* Smooth fade-in animation */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    /* Dark mode overrides */
+    .dark-mode .alert {
+      background-color: var(--alert-bg);
+      border-color: var(--alert-border);
+      color: var(--text-color);
     }
-    /* Form control styling for a glass effect */
-    .form-control {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #e0e0e0;
-      backdrop-filter: blur(5px);
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Dark mode toggle position */
+    .toggle-switch {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
     }
-    .form-control:focus {
-      border-color: #6200ea;
-      box-shadow: 0 0 8px rgba(98, 0, 234, 0.5);
+    /* Button microinteraction */
+    .btn {
+      transition: transform 0.1s;
     }
-    /* Label styling */
-    .form-label {
-      color: #ccc;
+    .btn:active {
+      transform: scale(0.98);
     }
-    /* Button styling with smooth hover animations */
-    .btn-primary {
-      background-color: #6200ea;
-      border-color: #6200ea;
-      transition: background-color 0.3s ease, transform 0.3s ease;
+    /* Loader styling */
+    .loader {
+      display: none;
+      margin: 20px auto;
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid var(--primary-color);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
     }
-    .btn-primary:hover {
-      background-color: #3700b3;
-      transform: scale(1.05);
-    }
-    /* Flash message adjustments */
-    .alert {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(5px);
-      color: #e0e0e0;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="mt-3">Spotify Playlist to CSV Exporter</h1>
-    <!-- Flash messages for errors or confirmations -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-      <div class="mt-3">
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }}" role="alert">
-            {{ message }}
-          </div>
-        {% endfor %}
+  <div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="mb-0">Spotify Playlist Exporter</h1>
+      <!-- Dark mode toggle -->
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="darkModeToggle" />
+        <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
       </div>
+    </div>
+    <p class="lead">
+      Enter a Spotify playlist URL to export its track details into a CSV file.
+    </p>
+    <form id="exportForm" method="POST" action="/export">
+      <div class="mb-3">
+        <label for="playlistUrl" class="form-label">Spotify Playlist URL</label>
+        <input type="url" class="form-control" id="playlistUrl" name="playlistUrl" placeholder="https://open.spotify.com/playlist/..." required />
+      </div>
+      <button type="submit" class="btn btn-primary">Export CSV</button>
+    </form>
+    <!-- Loader to show during CSV generation -->
+    <div class="loader" id="loader"></div>
+    
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="mt-4">
+          {% for message in messages %}
+            <div class="alert alert-warning" role="alert">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
       {% endif %}
     {% endwith %}
-    <!-- Playlist URL submission form -->
-    <form method="POST" class="mt-4">
-      <div class="mb-3">
-        <label for="playlist_url" class="form-label">Spotify Playlist URL</label>
-        <input type="url" class="form-control" id="playlist_url" name="playlist_url" placeholder="Enter Spotify playlist URL" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Export to CSV</button>
-    </form>
   </div>
-  <!-- Bootstrap 5 JavaScript bundle -->
+  
+  <!-- Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle dark mode
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    darkModeToggle.addEventListener('change', function() {
+      document.body.classList.toggle('dark-mode', this.checked);
+    });
+
+    // Show loader on form submit
+    const exportForm = document.getElementById('exportForm');
+    const loader = document.getElementById('loader');
+    exportForm.addEventListener('submit', function() {
+      loader.style.display = 'block';
+    });
+  </script>
 </body>
 </html>
