@@ -3,8 +3,6 @@ import csv
 import io
 import re
 import logging
-import webbrowser
-import threading
 from flask import Flask, render_template, request, send_file, flash, redirect, url_for
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -109,18 +107,9 @@ def extract_playlist_id(url):
     return None
 
 if __name__ == '__main__':
-    # Function to open the browser after a brief delay
-    def open_browser():
-        import time
-        time.sleep(1)  # Wait for the server to start
-        webbrowser.open("http://localhost:5000/")
-    
-    # Start the browser opener in a separate thread
-    threading.Thread(target=open_browser).start()
-    
     # Print message to terminal
     print("Server started. Go to http://localhost:5000/ in your browser.")
 
-    # Determine mode and start the server accordingly
-        from waitress import serve
-        serve(app, host="0.0.0.0", port=5000)
+    # Start the server using waitress
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=5000)
