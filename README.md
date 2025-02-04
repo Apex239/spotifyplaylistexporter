@@ -55,7 +55,7 @@ For Unix-like systems:
 
 For Windows:
 ```bash
-start.bat
+./start.bat
 ```
 
 Once running, open `http://127.0.0.1:5000` in your browser to access the application.
