@@ -20,11 +20,11 @@ A web application that exports Spotify playlists into CSV (spreadsheet) files. B
 
 ## Installation
 
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/Apex239/spotifyplaylistexporter
-   cd spotifyplaylistexporter
-   ```
+**Clone the Repository:**
+```bash
+git clone https://github.com/Apex239/spotifyplaylistexporter
+cd spotifyplaylistexporter
+```
 
 ### Generating a Flask Secret Key
 
