@@ -23,4 +23,4 @@ A web application that exports Spotify playlists into CSV (spreadsheet) files. B
 1. **Clone the Repository:**
    ```bash
    git clone https://github.com/Apex239/spotifyplaylistexporter
-   cd spotify-playlist-exporter
+   cd spotifyplaylistexporter
