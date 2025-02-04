@@ -122,9 +122,5 @@ if __name__ == '__main__':
     print("Server started. Go to http://localhost:5000/ in your browser.")
 
     # Determine mode and start the server accordingly
-    debug_mode = os.environ.get('FLASK_DEBUG', '0') == '0'
-    if debug_mode:
-        app.run(debug=False)
-    else:
         from waitress import serve
         serve(app, host="0.0.0.0", port=5000)
