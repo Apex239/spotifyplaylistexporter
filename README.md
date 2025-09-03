@@ -41,6 +41,52 @@ The `FLASK_SECRET_KEY` will be generated and added for you automatically by the 
 
 Now, simply run the appropriate script for your operating system. This single command will handle creating a virtual environment, installing dependencies, and starting the application.
 
+## Getting Started
+
+Follow these instructions to set up and run the project on your local machine for development or personal use.
+
+### Prerequisites
+
+-   Python 3.8+
+-   A Spotify Developer account to get API credentials. You can create one on the [Spotify Developer Dashboard](https://developer.spotify.com).
+
+### Installation and Configuration
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Apex239/spotifyplaylistexporter
+    cd spotifyplaylistexporter
+    ```
+
+2.  **Install dependencies:**
+    It's recommended to use a virtual environment.
+    ```bash
+    # Create and activate a virtual environment (optional but recommended)
+    python -m venv venv
+    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+
+    # Install the required packages
+    pip install -r requirements.txt
+    ```
+
+3.  **Configure Environment Variables:**
+    Create a file named `.env` in the project root and add your credentials.
+    First, generate a secret key for Flask:
+    ```bash
+    python -c "import secrets; print(secrets.token_hex(16))"
+    ```
+    Now, create the `.env` file with the following content, replacing the placeholder values with your actual credentials and the generated secret key:
+    ```ini
+    # .env
+    SPOTIFY_CLIENT_ID=your_spotify_client_id
+    SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+    FLASK_SECRET_KEY=your_generated_flask_secret_key
+    ```
+
+### Running the Application
+
+Once the configuration is complete, you can start the application using the provided startup scripts:
+
 -   **On macOS/Linux:**
     ```bash
     ./start.sh
@@ -49,8 +95,8 @@ Now, simply run the appropriate script for your operating system. This single co
     ```bash
     ./start.bat
     ```
-
 The script will perform all necessary checks. If your Spotify credentials are correct, the application will start, and you can access it at `http://127.0.0.1:5000`.
+The application will be available at `http://127.0.0.1:5000`.
 
 ## For Developers
 
