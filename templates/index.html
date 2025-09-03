@@ -4,125 +4,228 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spotify Playlist Exporter</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
   <style>
-    /* Minimalist design with smooth transitions */
+    /* --- Base & Variables --- */
     :root {
-      --bg-color: #ffffff;
-      --text-color: #212529;
-      --primary-color: #0d6efd;
-      --alert-bg: #fff3cd;
-      --alert-border: #ffeeba;
+      --font-family: 'Inter', sans-serif;
+      --primary-color: #6a82fb;
+      --primary-hover: #556bd1;
+      --text-color: #333;
+      --bg-gradient-start: #f8f9fa;
+      --bg-gradient-end: #e9ecef;
+      --card-bg: rgba(255, 255, 255, 0.5);
+      --card-border-color: rgba(255, 255, 255, 0.7);
+      --input-bg: rgba(255, 255, 255, 0.7);
+      --input-border: #ced4da;
+      --flash-bg: rgba(255, 204, 0, 0.7);
+      --flash-border: #ffc107;
     }
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      transition: background-color 0.3s, color 0.3s;
-    }
-    /* Dark mode variables */
+
     .dark-mode {
-      --bg-color: #121212;
+      --primary-color: #7f5af0;
+      --primary-hover: #6545c2;
       --text-color: #e0e0e0;
-      --primary-color: #4a90e2;
-      --alert-bg: #333333;
-      --alert-border: #444444;
+      --bg-gradient-start: #16161a;
+      --bg-gradient-end: #000000;
+      --card-bg: rgba(35, 35, 45, 0.3);
+      --card-border-color: rgba(255, 255, 255, 0.1);
+      --input-bg: rgba(0, 0, 0, 0.2);
+      --input-border: rgba(255, 255, 255, 0.2);
+      --flash-bg: rgba(127, 90, 240, 0.3);
+      --flash-border: var(--primary-color);
     }
-    /* Dark mode overrides */
-    .dark-mode .alert {
-      background-color: var(--alert-bg);
-      border-color: var(--alert-border);
+
+    /* --- Animated Gradient Background --- */
+    @keyframes gradient-animation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body {
+      font-family: var(--font-family);
       color: var(--text-color);
+      background: linear-gradient(45deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      background-size: 200% 200%;
+      animation: gradient-animation 15s ease infinite;
+      transition: color 0.5s, background 0.5s;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    /* Dark mode toggle position */
-    .toggle-switch {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
+
+    /* --- Main Container & Glassmorphism Card --- */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border-color);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+      transition: background 0.5s, border 0.5s, box-shadow 0.3s ease;
     }
-    /* Button microinteraction */
-    .btn {
-      transition: transform 0.1s;
+
+    .glass-card:hover {
+        box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
     }
-    .btn:active {
-      transform: scale(0.98);
+
+    /* --- UI Elements --- */
+    h1 {
+      font-weight: 700;
     }
-    /* Loader styling */
+
+    .form-control {
+      background-color: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      color: var(--text-color);
+      padding: 0.75rem 1rem;
+      transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .form-control:focus {
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px var(--primary-color-translucent, rgba(127, 90, 240, 0.25));
+    }
+    .dark-mode .form-control:focus {
+        box-shadow: 0 0 0 4px rgba(127, 90, 240, 0.2);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 10px;
+      font-weight: 500;
+      padding: 0.75rem 1.5rem;
+      transition: background-color 0.3s, transform 0.2s ease;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-3px);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .alert {
+        background-color: var(--flash-bg);
+        border: 1px solid var(--flash-border);
+        color: var(--text-color);
+        border-radius: 10px;
+        backdrop-filter: blur(5px);
+    }
+
+    /* --- Dark Mode Toggle --- */
+    .dark-mode-toggle {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+    }
+
+    /* --- Loader --- */
     .loader {
       display: none;
       margin: 20px auto;
-      border: 8px solid #f3f3f3;
-      border-top: 8px solid var(--primary-color);
+      border: 6px solid rgba(255, 255, 255, 0.2);
+      border-top: 6px solid var(--primary-color);
       border-radius: 50%;
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       animation: spin 1s linear infinite;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
   </style>
 </head>
 <body>
-  <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="mb-0">Spotify Playlist Exporter</h1>
-      <!-- Dark mode toggle -->
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="darkModeToggle" />
-        <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
-      </div>
-    </div>
-    <p class="lead">
-      Enter a Spotify playlist URL to export its track details into a CSV file.
-    </p>
-    <form id="exportForm" method="POST" action="/">
-      <div class="mb-3">
-        <label for="playlistUrl" class="form-label">Spotify Playlist URL</label>
-        <input type="url" class="form-control" id="playlistUrl" name="playlist_url" placeholder="https://open.spotify.com/playlist/..." required />
-      </div>
-      <button type="submit" class="btn btn-primary">Export CSV</button>
-    </form>
-    <!-- Loader to show during CSV generation -->
-    <div class="loader" id="loader"></div>
-    <!-- Message and CSV preview -->
-    <div id="exportResult" class="mt-4 d-none">
-      <p class="mb-2">CSV exported</p>
-      <pre id="csvPreview" class="border p-2" style="max-height: 300px; overflow-y: auto;"></pre>
-    </div>
-    <!-- Display flash messages -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="mt-4">
-          {% for message in messages %}
-            <div class="alert alert-warning" role="alert">
-              {{ message }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+
+  <div class="dark-mode-toggle form-check form-switch">
+    <input class="form-check-input" type="checkbox" id="darkModeToggle" />
+    <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
   </div>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-9">
+        <div class="glass-card text-center">
+          <h1 class="mb-3">Spotify Playlist Exporter</h1>
+          <p class="lead mb-4 text-muted">
+            Turn your favorite Spotify playlists into clean, simple CSV files.
+          </p>
+
+          <form id="exportForm" method="POST" action="/">
+            <div class="mb-3">
+              <input type="url" class="form-control" id="playlistUrl" name="playlist_url" placeholder="Paste your Spotify playlist URL here..." required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Export to CSV</button>
+          </form>
+
+          <div class="loader" id="loader"></div>
+
+          <div id="exportResult" class="mt-4 d-none">
+            <p class="mb-2">CSV exported successfully. Downloading...</p>
+            <pre id="csvPreview" class="border p-3 rounded text-start" style="max-height: 200px; overflow-y: auto; background-color: rgba(0,0,0,0.1);"></pre>
+          </div>
+
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="mt-4">
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Toggle dark mode
     const darkModeToggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    // Apply saved theme on load
+    if (localStorage.getItem('theme') === 'dark') {
+      body.classList.add('dark-mode');
+      darkModeToggle.checked = true;
+    }
+
+    // Toggle dark mode
     darkModeToggle.addEventListener('change', function() {
-      document.body.classList.toggle('dark-mode', this.checked);
+      body.classList.toggle('dark-mode', this.checked);
+      localStorage.setItem('theme', this.checked ? 'dark' : 'light');
     });
 
-    // Handle form submission via AJAX to display CSV download status and preview
     const exportForm = document.getElementById('exportForm');
     const loader = document.getElementById('loader');
     const exportResult = document.getElementById('exportResult');
     const csvPreview = document.getElementById('csvPreview');
 
     exportForm.addEventListener('submit', function(e) {
-      e.preventDefault(); // Prevent the default form submission
+      e.preventDefault();
       loader.style.display = 'block';
-      
+      exportResult.classList.add('d-none'); // Hide previous results
+
       const formData = new FormData(exportForm);
       fetch(exportForm.action, {
         method: 'POST',
@@ -130,6 +233,28 @@
       })
       .then(response => {
         if (!response.ok) {
+          window.location.reload(); // Reload to see flash messages from server
+          return;
+        }
+        const contentDisposition = response.headers.get('content-disposition');
+        let filename = 'playlist.csv';
+        if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+            if (filenameMatch && filenameMatch.length > 1) {
+                filename = filenameMatch[1];
+            } else {
+                const filenameMatchUnquoted = contentDisposition.match(/filename=([^;]+)/);
+                if(filenameMatchUnquoted && filenameMatchUnquoted.length > 1) {
+                    filename = filenameMatchUnquoted[1];
+                }
+            }
+        }
+        return Promise.all([response.text(), filename]);
+      })
+      .then(([csvData, filename]) => {
+        if (!csvData) return;
+
+=======
             // If the response is not OK, we need to handle the error.
             // For now, we'll just throw an error, but a real app might parse a JSON error message.
             throw new Error('Network response was not ok.');
@@ -160,6 +285,7 @@
         const url = URL.createObjectURL(blob);
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
+        downloadLink.download = filename;
         downloadLink.download = filename; // Use the extracted filename
         document.body.appendChild(downloadLink);
         downloadLink.click();

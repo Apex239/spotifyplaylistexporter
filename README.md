@@ -11,6 +11,36 @@ A professional, easy-to-use web application for exporting your Spotify playlists
 -   **Modern UI:** A clean, responsive interface built with Bootstrap 5 that includes a dark mode toggle.
 -   **Robust and Tested:** The backend is well-tested to ensure reliability and maintainability.
 
+## Getting Started in 3 Steps
+
+This project includes automated setup scripts to make getting started as simple as possible.
+
+### 1. Clone the Repository
+
+First, clone the repository to your local machine:
+```bash
+git clone https://github.com/Apex239/spotifyplaylistexporter
+cd spotifyplaylistexporter
+```
+
+### 2. Add Your Spotify Credentials
+
+You need to provide your Spotify API credentials. The startup script will guide you through this by creating a `.env` file for you from the `.env.example` template.
+
+Open the newly created `.env` file and replace the placeholder values with your credentials from the [Spotify Developer Dashboard](https://developer.spotify.com).
+
+```ini
+# .env
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+...
+```
+The `FLASK_SECRET_KEY` will be generated and added for you automatically by the script.
+
+### 3. Run the Startup Script
+
+Now, simply run the appropriate script for your operating system. This single command will handle creating a virtual environment, installing dependencies, and starting the application.
+
 ## Getting Started
 
 Follow these instructions to set up and run the project on your local machine for development or personal use.
@@ -65,7 +95,7 @@ Once the configuration is complete, you can start the application using the prov
     ```bash
     ./start.bat
     ```
-
+The script will perform all necessary checks. If your Spotify credentials are correct, the application will start, and you can access it at `http://127.0.0.1:5000`.
 The application will be available at `http://127.0.0.1:5000`.
 
 ## For Developers
