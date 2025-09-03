@@ -1,65 +1,103 @@
-# Spotify Playlist to CSV Exporter
+# Spotify Playlist Exporter
 
-A web application that exports Spotify playlists into CSV (spreadsheet) files. Built with Python, Flask, and Spotipy, this project provides a user-friendly web interface that allows you to quickly convert your favorite Spotify playlists into CSV format.
+A professional, easy-to-use web application for exporting your Spotify playlists to CSV files. Built with Python and Flask, this tool provides a clean interface to convert playlist data into a spreadsheet-friendly format, complete with track name, artist, album, and duration.
 
-## Features
+## Key Features
 
-- **Export Playlists:** Enter a Spotify playlist URL to download a CSV file containing track details (Name, Artist, Album, Duration in milliseconds).
-- **Responsive Web Interface:** Enjoy a modern, professional UI built with Bootstrap 5.
-- **Cross-Platform Support:** Startup scripts for Unix-like systems (`start.sh`) and Windows (`start.bat`) ensure easy setup on any platform.
-- **Efficient Pagination Handling:** Automatically retrieves all tracks even for large playlists.
-- **Robust Error Handling:** Provides clear flash messages for invalid inputs or processing errors.
+-   **Simple Web Interface:** Just paste a Spotify playlist URL and click "Export". No complex setup required for day-to-day use.
+-   **Dynamic CSV Filenames:** Exports files with the playlist's name (e.g., `My_Awesome_Playlist.csv`) for easy organization.
+-   **Comprehensive Data:** The CSV includes Track Name, Artist, Album, and Duration (in milliseconds).
+-   **Handles Large Playlists:** Automatically paginates through the Spotify API to retrieve all tracks from any size playlist.
+-   **Modern UI:** A clean, responsive interface built with Bootstrap 5 that includes a dark mode toggle.
+-   **Robust and Tested:** The backend is well-tested to ensure reliability and maintainability.
 
-## Prerequisites
+## Getting Started in 3 Steps
 
-- **Python:** Version 3.6 or later.
-- **Spotify Developer Account:** Register an application on the [Spotify Developer Dashboard](https://developer.spotify.com) to obtain your `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`.
-- **Operating System:**  
-  - Unix-like systems: Use a Bash terminal to run `start.sh`.  
-  - Windows: Use Command Prompt, PowerShell, or Git Bash to run `start.bat`.
+This project includes automated setup scripts to make getting started as simple as possible.
 
-## Installation
+### 1. Clone the Repository
 
-**Clone the Repository:**
+First, clone the repository to your local machine:
 ```bash
 git clone https://github.com/Apex239/spotifyplaylistexporter
 cd spotifyplaylistexporter
 ```
 
-### Generating a Flask Secret Key
+### 2. Add Your Spotify Credentials
 
-The `FLASK_SECRET_KEY` is required to sign session cookies and other security-related tokens in Flask. You must generate a strong random key before running the app. To do this, run the following command:
+You need to provide your Spotify API credentials. The startup script will guide you through this by creating a `.env` file for you from the `.env.example` template.
 
-```bash
-python -c "import secrets; print(secrets.token_hex(16))"
-```
-
-### Configuration
-
-Before running the application, you need to set up your environment variables.
+Open the newly created `.env` file and replace the placeholder values with your credentials from the [Spotify Developer Dashboard](https://developer.spotify.com).
 
 ```ini
+# .env
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-FLASK_SECRET_KEY=your_flask_secret_key
+...
+```
+The `FLASK_SECRET_KEY` will be generated and added for you automatically by the script.
+
+### 3. Run the Startup Script
+
+Now, simply run the appropriate script for your operating system. This single command will handle creating a virtual environment, installing dependencies, and starting the application.
+
+-   **On macOS/Linux:**
+    ```bash
+    ./start.sh
+    ```
+-   **On Windows:**
+    ```bash
+    ./start.bat
+    ```
+
+The script will perform all necessary checks. If your Spotify credentials are correct, the application will start, and you can access it at `http://127.0.0.1:5000`.
+
+## For Developers
+
+This section provides information for those who wish to contribute to or extend the project.
+
+### Project Structure
+
+The project follows a standard Flask application structure:
+
+```
+.
+├── .env              # Environment variables (not version controlled)
+├── app.py            # Main Flask application, contains routing and app factory
+├── helpers.py        # Helper functions for URL parsing and filename sanitization
+├── requirements.txt  # Project dependencies
+├── start.bat         # Startup script for Windows
+├── start.sh          # Startup script for macOS/Linux
+├── templates/
+│   └── index.html    # Main HTML template for the web interface
+└── tests/
+    ├── test_app.py   # Integration tests for the Flask app
+    └── test_helpers.py # Unit tests for helper functions
 ```
 
-## Running the Application
+### Running Tests
 
-To start the Flask app, use the appropriate startup script:
+This project uses `pytest` for testing. To run the full test suite, execute the following command from the root directory:
 
-For Unix-like systems:
 ```bash
-./start.sh
+pytest
 ```
 
-For Windows:
-```bash
-./start.bat
-```
+The tests include unit tests for the helper functions and integration tests that mock the Spotify API, ensuring that the application logic is correct without making real network calls.
 
-Once running, open `http://127.0.0.1:5000` in your browser to access the application.
+## Contributing
+
+Contributions are welcome! If you have a suggestion or find a bug, please open an issue to discuss it.
+
+If you wish to contribute code, please follow these steps:
+1.  Fork the repository.
+2.  Create a new branch (`git checkout -b feature/YourFeature`).
+3.  Make your changes.
+4.  Ensure all tests pass (`pytest`).
+5.  Commit your changes (`git commit -m 'Add some feature'`).
+6.  Push to the branch (`git push origin feature/YourFeature`).
+7.  Open a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
