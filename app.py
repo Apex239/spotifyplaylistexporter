@@ -8,56 +8,11 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
-# Load environment variables from .env/.flaskenv if available.
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
+from helpers import extract_playlist_id, sanitize_filename
 
-# Create and configure the Flask app
-app = Flask(__name__)
-
-# Enforce a strong secret key for production
-app.secret_key = os.environ.get('FLASK_SECRET_KEY')
-if not app.secret_key:
-    logging.error("FLASK_SECRET_KEY environment variable is missing.")
-    raise Exception("Production error: FLASK_SECRET_KEY environment variable is required.")
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
+# This will be initialized in create_app
+sp = None
 logger = logging.getLogger(__name__)
-
-# Spotify API configuration: ensure these environment variables are set
-SPOTIFY_CLIENT_ID = os.environ.get('SPOTIFY_CLIENT_ID')
-SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
-if not SPOTIFY_CLIENT_ID or not SPOTIFY_CLIENT_SECRET:
-    logger.error("Spotify API credentials are not set in environment variables.")
-    raise Exception("Spotify API credentials are missing. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET.")
-
-# Initialize Spotipy with client credentials
-spotify_credentials_manager = SpotifyClientCredentials(
-    client_id=SPOTIFY_CLIENT_ID,
-    client_secret=SPOTIFY_CLIENT_SECRET
-)
-sp = spotipy.Spotify(client_credentials_manager=spotify_credentials_manager)
-
-def extract_playlist_id(url):
-    """
-    Extracts the Spotify playlist ID from the URL.
-    Supports URLs like:
-    - https://open.spotify.com/playlist/{playlist_id}
-    - spotify:playlist:{playlist_id}
-    """
-    patterns = [
-        r'open\.spotify\.com/playlist/([a-zA-Z0-9]+)',
-        r'spotify:playlist:([a-zA-Z0-9]+)'
-    ]
-    for pattern in patterns:
-        match = re.search(pattern, url)
-        if match:
-            return match.group(1)
-    return None
 
 def generate_csv(track_data):
     """
@@ -71,57 +26,86 @@ def generate_csv(track_data):
     output.seek(0)
     return io.BytesIO(output.getvalue().encode('utf-8'))
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        playlist_url = request.form.get('playlist_url')
-        if not playlist_url:
-            flash("Please enter a Spotify playlist URL.", "danger")
-            return redirect(url_for('index'))
-        # Extract the playlist ID from the URL
-        playlist_id = extract_playlist_id(playlist_url)
-        if not playlist_id:
-            flash("Invalid Spotify playlist URL.", "danger")
-            return redirect(url_for('index'))
-        try:
-            # Retrieve the playlist data from Spotify
-            playlist = sp.playlist(playlist_id)
-            tracks = playlist.get('tracks')
-            track_data = []
-            # Handle paginated track lists
-            while tracks:
-                for item in tracks.get('items', []):
-                    track = item.get('track')
-                    if track:
-                        track_data.append({
-                            'Name': track.get('name'),
-                            'Artist': ', '.join(artist['name'] for artist in track.get('artists', [])),
-                            'Album': track.get('album', {}).get('name'),
-                            'Duration (ms)': track.get('duration_ms')
-                        })
-                if tracks.get('next'):
-                    tracks = sp.next(tracks)
-                else:
-                    break
-            # Generate CSV in-memory and send as download
-            csv_file = generate_csv(track_data)
-            return send_file(
-                csv_file,
-                mimetype='text/csv',
-                as_attachment=True,
-                download_name='playlist.csv'
-            )
-        except SpotifyException as se:
-            logger.exception("Spotify API error: %s", se)
-            flash("An error occurred with Spotify API processing. Please check the playlist and try again.", "danger")
-            return redirect(url_for('index'))
-        except Exception as e:
-            logger.exception("Error processing playlist: %s", e)
-            flash("An unexpected error occurred while processing the playlist.", "danger")
-            return redirect(url_for('index'))
-    return render_template('index.html')
+def create_app():
+    """Create and configure the Flask application."""
+    app = Flask(__name__)
+
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except ImportError:
+        pass
+
+    app.secret_key = os.environ.get('FLASK_SECRET_KEY')
+    if not app.secret_key and app.env == "production":
+        raise Exception("Production error: FLASK_SECRET_KEY environment variable is required.")
+
+    logging.basicConfig(level=logging.INFO)
+
+    global sp
+    spotify_credentials_manager = SpotifyClientCredentials(
+        client_id=os.environ.get('SPOTIFY_CLIENT_ID'),
+        client_secret=os.environ.get('SPOTIFY_CLIENT_SECRET')
+    )
+    sp = spotipy.Spotify(client_credentials_manager=spotify_credentials_manager)
+
+    @app.route('/', methods=['GET', 'POST'])
+    def index():
+        if request.method == 'POST':
+            playlist_url = request.form.get('playlist_url')
+            if not playlist_url:
+                flash("Please enter a Spotify playlist URL.", "danger")
+                return redirect(url_for('index'))
+
+            playlist_id = extract_playlist_id(playlist_url)
+            if not playlist_id:
+                flash("Invalid Spotify playlist URL.", "danger")
+                return redirect(url_for('index'))
+
+            try:
+                playlist = sp.playlist(playlist_id)
+                tracks = playlist.get('tracks', {})
+                track_data = []
+                while tracks:
+                    for item in tracks.get('items', []):
+                        track = item.get('track')
+                        if track:
+                            track_data.append({
+                                'Name': track.get('name'),
+                                'Artist': ', '.join(artist['name'] for artist in track.get('artists', [])),
+                                'Album': track.get('album', {}).get('name'),
+                                'Duration (ms)': track.get('duration_ms')
+                            })
+                    if tracks.get('next'):
+                        tracks = sp.next(tracks)
+                    else:
+                        break
+
+                playlist_name = playlist.get('name', 'playlist')
+                download_filename = sanitize_filename(playlist_name)
+                csv_file = generate_csv(track_data)
+
+                return send_file(
+                    csv_file,
+                    mimetype='text/csv',
+                    as_attachment=True,
+                    download_name=download_filename
+                )
+            except SpotifyException as se:
+                logger.error("Spotify API error: %s", se)
+                flash("An error occurred with the Spotify API. The playlist might be private or invalid.", "danger")
+                return redirect(url_for('index'))
+            except Exception as e:
+                logger.error("Error processing playlist: %s", e)
+                flash("An unexpected error occurred.", "danger")
+                return redirect(url_for('index'))
+
+        return render_template('index.html')
+
+    return app
 
 if __name__ == '__main__':
+    app = create_app()
     print("Server started. Go to http://localhost:5000/ in your browser.")
     from waitress import serve
     serve(app, host="0.0.0.0", port=5000)
