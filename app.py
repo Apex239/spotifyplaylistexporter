@@ -59,6 +59,22 @@ def extract_playlist_id(url):
             return match.group(1)
     return None
 
+
+def sanitize_filename(name):
+    """Sanitizes a string to be a valid filename."""
+    name = name.strip()
+    # Remove invalid characters that are common across OSes
+    name = re.sub(r'[<>:"/\\|?*]', '', name)
+    # Replace spaces with underscores for better compatibility
+    name = name.replace(' ', '_')
+    # Limit length to avoid filesystem errors
+    name = name[:150]
+    # If the name ends up empty after sanitization, provide a default
+    if not name:
+        return "playlist.csv"
+    return f"{name}.csv"
+
+
 def generate_csv(track_data):
     """
     Generates a CSV file (in-memory) from the track data and returns a BytesIO object.
@@ -103,13 +119,17 @@ def index():
                     tracks = sp.next(tracks)
                 else:
                     break
+            # Generate a dynamic filename from the playlist's name
+            playlist_name = playlist.get('name', 'playlist')
+            download_filename = sanitize_filename(playlist_name)
+
             # Generate CSV in-memory and send as download
             csv_file = generate_csv(track_data)
             return send_file(
                 csv_file,
                 mimetype='text/csv',
                 as_attachment=True,
-                download_name='playlist.csv'
+                download_name=download_filename
             )
         except SpotifyException as se:
             logger.exception("Spotify API error: %s", se)
