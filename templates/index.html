@@ -17,30 +17,16 @@
     /* --- Base & Variables --- */
     :root {
       --font-family: 'Inter', sans-serif;
-      --primary-color: #6a82fb;
-      --primary-hover: #556bd1;
-      --text-color: #333;
-      --bg-gradient-start: #f8f9fa;
-      --bg-gradient-end: #e9ecef;
-      --card-bg: rgba(255, 255, 255, 0.5);
-      --card-border-color: rgba(255, 255, 255, 0.7);
-      --input-bg: rgba(255, 255, 255, 0.7);
-      --input-border: #ced4da;
-      --flash-bg: rgba(255, 204, 0, 0.7);
-      --flash-border: #ffc107;
-    }
-
-    .dark-mode {
       --primary-color: #7f5af0;
       --primary-hover: #6545c2;
       --text-color: #e0e0e0;
       --bg-gradient-start: #16161a;
       --bg-gradient-end: #000000;
-      --card-bg: rgba(35, 35, 45, 0.3);
+      --card-bg: rgba(25, 25, 30, 0.4);
       --card-border-color: rgba(255, 255, 255, 0.1);
       --input-bg: rgba(0, 0, 0, 0.2);
       --input-border: rgba(255, 255, 255, 0.2);
-      --flash-bg: rgba(127, 90, 240, 0.3);
+      --flash-bg: rgba(127, 90, 240, 0.2);
       --flash-border: var(--primary-color);
     }
 
@@ -55,8 +41,8 @@
       font-family: var(--font-family);
       color: var(--text-color);
       background: linear-gradient(45deg, var(--bg-gradient-start), var(--bg-gradient-end));
-      background-size: 200% 200%;
-      animation: gradient-animation 15s ease infinite;
+      background-size: 400% 400%;
+      animation: gradient-animation 25s ease infinite;
       transition: color 0.5s, background 0.5s;
       min-height: 100vh;
       display: flex;
@@ -64,56 +50,61 @@
       justify-content: center;
     }
 
-    /* --- Main Container & Glassmorphism Card --- */
+    /* --- Main Container & Liquid Glass UI --- */
     .glass-card {
       background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
       border: 1px solid var(--card-border-color);
-      border-radius: 20px;
-      padding: 2.5rem;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-      transition: background 0.5s, border 0.5s, box-shadow 0.3s ease;
+      border-radius: 25px;
+      padding: 3rem;
+      box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.3);
+      transition: background 0.5s, border 0.5s, box-shadow 0.5s ease;
     }
 
     .glass-card:hover {
-        box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
+        box-shadow: 0 12px 50px 0 rgba(0, 0, 0, 0.4);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .text-muted {
+      color: #a0a0a0 !important;
     }
 
     /* --- UI Elements --- */
     h1 {
       font-weight: 700;
+      color: #ffffff;
     }
 
     .form-control {
       background-color: var(--input-bg);
       border: 1px solid var(--input-border);
-      border-radius: 10px;
+      border-radius: 12px;
       color: var(--text-color);
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1.1rem;
       transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
     }
     .form-control:focus {
       background-color: var(--input-bg);
       color: var(--text-color);
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px var(--primary-color-translucent, rgba(127, 90, 240, 0.25));
-    }
-    .dark-mode .form-control:focus {
-        box-shadow: 0 0 0 4px rgba(127, 90, 240, 0.2);
+      box-shadow: 0 0 0 4px rgba(127, 90, 240, 0.25);
     }
 
     .btn-primary {
       background-color: var(--primary-color);
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-weight: 500;
-      padding: 0.75rem 1.5rem;
-      transition: background-color 0.3s, transform 0.2s ease;
+      padding: 0.85rem 1.5rem;
+      transition: background-color 0.3s, transform 0.2s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 15px rgba(127, 90, 240, 0.2);
     }
     .btn-primary:hover {
       background-color: var(--primary-hover);
-      transform: translateY(-3px);
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px rgba(127, 90, 240, 0.3);
     }
     .btn-primary:active {
       transform: translateY(0);
@@ -123,27 +114,20 @@
         background-color: var(--flash-bg);
         border: 1px solid var(--flash-border);
         color: var(--text-color);
-        border-radius: 10px;
-        backdrop-filter: blur(5px);
-    }
-
-    /* --- Dark Mode Toggle --- */
-    .dark-mode-toggle {
-        position: absolute;
-        top: 2rem;
-        right: 2rem;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
     }
 
     /* --- Loader --- */
     .loader {
       display: none;
-      margin: 20px auto;
-      border: 6px solid rgba(255, 255, 255, 0.2);
+      margin: 25px auto;
+      border: 6px solid rgba(255, 255, 255, 0.1);
       border-top: 6px solid var(--primary-color);
       border-radius: 50%;
       width: 50px;
       height: 50px;
-      animation: spin 1s linear infinite;
+      animation: spin 1.2s linear infinite;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -152,12 +136,7 @@
 
   </style>
 </head>
-<body>
-
-  <div class="dark-mode-toggle form-check form-switch">
-    <input class="form-check-input" type="checkbox" id="darkModeToggle" />
-    <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
-  </div>
+<body class="dark-mode">
 
   <div class="container">
     <div class="row justify-content-center">
@@ -179,7 +158,7 @@
 
           <div id="exportResult" class="mt-4 d-none">
             <p class="mb-2">CSV exported successfully. Downloading...</p>
-            <pre id="csvPreview" class="border p-3 rounded text-start" style="max-height: 200px; overflow-y: auto; background-color: rgba(0,0,0,0.1);"></pre>
+            <pre id="csvPreview" class="border p-3 rounded text-start" style="max-height: 200px; overflow-y: auto; background-color: rgba(0,0,0,0.2); border-color: var(--input-border) !important;"></pre>
           </div>
 
           {% with messages = get_flashed_messages(with_categories=true) %}
@@ -201,21 +180,6 @@
   <!-- Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const body = document.body;
-
-    // Apply saved theme on load
-    if (localStorage.getItem('theme') === 'dark') {
-      body.classList.add('dark-mode');
-      darkModeToggle.checked = true;
-    }
-
-    // Toggle dark mode
-    darkModeToggle.addEventListener('change', function() {
-      body.classList.toggle('dark-mode', this.checked);
-      localStorage.setItem('theme', this.checked ? 'dark' : 'light');
-    });
-
     const exportForm = document.getElementById('exportForm');
     const loader = document.getElementById('loader');
     const exportResult = document.getElementById('exportResult');
@@ -233,67 +197,56 @@
       })
       .then(response => {
         if (!response.ok) {
-          window.location.reload(); // Reload to see flash messages from server
-          return;
+          // The server sends a flash message on error. Reloading the page is the
+          // simplest way to display it to the user.
+          window.location.reload();
+          return Promise.reject(new Error('Server error, reloading to show flash message.'));
         }
+
+        // Robust filename extraction from Content-Disposition header
         const contentDisposition = response.headers.get('content-disposition');
-        let filename = 'playlist.csv';
+        let filename = 'playlist.csv'; // Default filename
         if (contentDisposition) {
-            const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+            // Handles "filename=My Playlist.csv" and "filename=\"My Playlist.csv\""
+            const filenameMatch = contentDisposition.match(/filename\*?=(?:UTF-8'')?([^;]+)/);
             if (filenameMatch && filenameMatch.length > 1) {
-                filename = filenameMatch[1];
-            } else {
-                const filenameMatchUnquoted = contentDisposition.match(/filename=([^;]+)/);
-                if(filenameMatchUnquoted && filenameMatchUnquoted.length > 1) {
-                    filename = filenameMatchUnquoted[1];
-                }
+                // Decode URI-encoded characters and remove quotes
+                filename = decodeURIComponent(filenameMatch[1].replace(/"/g, ''));
             }
         }
+
         return Promise.all([response.text(), filename]);
       })
       .then(([csvData, filename]) => {
         if (!csvData) return;
 
-=======
-            // If the response is not OK, we need to handle the error.
-            // For now, we'll just throw an error, but a real app might parse a JSON error message.
-            throw new Error('Network response was not ok.');
-        }
-
-        // Extract filename from the Content-Disposition header
-        const contentDisposition = response.headers.get('content-disposition');
-        let filename = 'playlist.csv'; // Default filename
-        if (contentDisposition) {
-            const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
-            if (filenameMatch && filenameMatch.length > 1) {
-                filename = filenameMatch[1];
-            }
-        }
-
-        // We need both the text content and the filename for the next step.
-        // Promise.all lets us pass them together.
-        return Promise.all([response.text(), filename]);
-      })
-      .then(([csvData, filename]) => {
-        // Hide the loader and show the export message and CSV preview
+        // Hide the loader and show the result section with a preview
         loader.style.display = 'none';
         exportResult.classList.remove('d-none');
         csvPreview.textContent = csvData;
         
-        // Create and trigger the CSV download with the dynamic filename
+        // Create a Blob from the CSV data and trigger a download
         const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
         downloadLink.download = filename;
-        downloadLink.download = filename; // Use the extracted filename
         document.body.appendChild(downloadLink);
         downloadLink.click();
+
+        // Clean up by removing the link and revoking the object URL
         document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(url);
       })
       .catch(error => {
+        // This will catch network errors or the rejection from the first .then()
         loader.style.display = 'none';
-        console.error('Error exporting CSV:', error);
+        console.error('Export failed:', error);
+        // In case of a network error (not a server error), we can alert the user.
+        // Server errors are handled by reloading the page.
+        if (error.message !== 'Server error, reloading to show flash message.') {
+            alert('A network error occurred. Please check your connection and try again.');
+        }
       });
     });
   </script>
